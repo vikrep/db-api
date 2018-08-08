@@ -7,16 +7,19 @@ const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
 
+// let pool = new pg.Pool({
+//     port: 5432,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASS,
+//     database: process.env.DB_NAME,
+//     host: process.env.DB_HOST,
+//     max: 10
+// });
+
 let pool = new pg.Pool({
-    port: 5432,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    max: 10
-});
-
-
+    connectionString: process.env.DATABASE_URL,
+    ssl: true
+})
 
 // Setup the express app
 
