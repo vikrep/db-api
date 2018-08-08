@@ -1,3 +1,4 @@
+const cool = require('cool-ascii-faces')
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 
+
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "origin, X-Requested-With, Content_type, Accept");
@@ -52,5 +54,6 @@ app.get('/api/albums', (req, res) => {
 
 });
 
+app.get('/cool', (req, res) => res.send(cool()))
 
 app.listen(PORT, () => console.log('Listening on port ' + PORT));
