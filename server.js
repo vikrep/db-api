@@ -8,14 +8,14 @@ const connectionString = 'postgres://kghpydsncehrre:f5f822411a913a9e8a73caeae811
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
 
-let pool = new Pool({
-    port: 5432,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    max: 10
-});
+// let pool = new Pool({
+//     port: 5432,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASS,
+//     database: process.env.DB_NAME,
+//     host: process.env.DB_HOST,
+//     max: 10
+// });
 
 const client = new Client({
     connectionString: connectionString,
@@ -43,12 +43,9 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/api/albums', (req, res) => {
-    client.connect((err, db, done) => {
-        if (err) {
-            res.status(500).json({ error: err });
-        } else {
-            db.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id',
+
+    client.connect() 
+            client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id',
                 (err, table) => {
                     if (err) {
                         res.status(500).json({ error: err });
@@ -56,10 +53,9 @@ app.get('/api/albums', (req, res) => {
                         res.status(200).send(table.rows)
                     }
                 })
-        }
         client.end();
-    })
-});
+
+
 
 
 // app.get('/api/albums', (req, res) => {
@@ -80,6 +76,6 @@ app.get('/api/albums', (req, res) => {
 //     })
 // });
 
-app.get('/cool', (req, res) => res.send(cool()))
+
 
 app.listen(PORT, () => console.log('Listening on port ' + PORT));
