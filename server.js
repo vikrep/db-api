@@ -2,26 +2,24 @@ const cool = require('cool-ascii-faces')
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const pg = require('pg');
+const { Pool } = require('pg');
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
-require('dotenv').config()
+// require('dotenv').config()
 
-let pool = new pg.Pool({
-    port: 5432,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    max: 10
-});
+// let pool = new Pool({
+//     port: 5432,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASS,
+//     database: process.env.DB_NAME,
+//     host: process.env.DB_HOST,
+//     max: 10
+// });
 
-// let pool = new pg.Pool({
-//     connectionString: process.env.DATABASE_URL,
-//     ssl: true
-// })
-
-// Setup the express app
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: true,
+  });
 
 const app = express();
 
@@ -53,8 +51,8 @@ app.get('/api/albums', (req, res) => {
                     }
                 })
         }
+        pool.end();
     })
-
 });
 
 app.get('/cool', (req, res) => res.send(cool()))
