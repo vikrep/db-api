@@ -52,8 +52,9 @@ app.use(function (req, res, next) {
                     } else {
                         res.status(200).send(table.rows)
                     }
+                    client.end();
                 })
-        client.end();
+        
 
 
 
