@@ -1,12 +1,12 @@
-const cool = require('cool-ascii-faces')
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const {Pool} = require('pg');
+const { Pool } = require('pg');
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
 
+// Pool for LocalHost
 // let pool = new Pool({
 //     port: 5432,
 //     user: process.env.DB_USER,
@@ -16,6 +16,7 @@ require('dotenv').config()
 //     max: 10
 // });
 
+//Pool for Heroku
 let pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: true
@@ -54,11 +55,9 @@ app.get('/api/albums', (req, res) => {
                 })
         }
     })
-
 });
 
-app.get('/cool', (req, res) => res.send(cool()))
 
-app.listen(process.env.PORT || PORT, function() {
+app.listen(process.env.PORT || PORT, function () {
     console.log("Llistening on port" + PORT);
-  });
+});
