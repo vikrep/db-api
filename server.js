@@ -46,7 +46,7 @@ app.use(function (req, res, next) {
 
 
 client.connect()
-client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id',
+client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id;',
     (err, res) => {
         if (err) throw err;
         for (let row of res.rows) {
