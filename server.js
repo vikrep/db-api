@@ -47,11 +47,11 @@ app.use(function (req, res, next) {
 
     client.connect() 
             client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id',
-                (err, table) => {
+                (err, res) => {
                     if (err) {
                         res.status(500).json({ error: err });
                     } else {
-                        res.status(200).send(table.rows)
+                        res.status(200).send(rows)
                     }
                     client.end();
                 })
