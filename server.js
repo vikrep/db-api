@@ -19,6 +19,7 @@ require('dotenv').config()
 
 const client = new Client({
     connectionString: connectionString,
+    ssl: true,
   })
 
    
