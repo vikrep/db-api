@@ -20,9 +20,9 @@ require('dotenv').config()
 const client = new Client({
     connectionString: connectionString,
     ssl: true,
-  })
+})
 
-   
+
 // const pool = new Pool({
 //     connectionString: process.env.DATABASE_URL,
 //     ssl: true,
@@ -45,17 +45,16 @@ app.use(function (req, res, next) {
 });
 
 
-    client.connect() 
-            client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id',
-                (err, res) => {
-                    if (err) {
-                        res.status(500).json({ error: err });
-                    } else {
-                        res.status(200).send(rows)
-                    }
-                    client.end();
-                })
-        
+client.connect()
+client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id',
+    (err, res) => {
+        if (err) throw err;
+        for (let row of res.rows) {
+            console.log(JSON.stringify(row));
+        }
+        client.end();
+    })
+
 
 
 
