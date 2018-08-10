@@ -41,12 +41,13 @@ app.use(function (req, res, next) {
 });
 
 app.get('/api/albums', (req, res) => {
-    pool.connect((err, db, done) => {
+    pool.connect((err, client, done) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
-            db.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id;',
+            client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id;',
                 (err, table) => {
+                    done();
                     if (err) {
                         res.status(500).json({ error: err });
                     } else {
