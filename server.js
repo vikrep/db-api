@@ -54,6 +54,7 @@ app.get('/api/albums', (req, res) => {
                     }
                 })
         }
+        pool.end()
     })
 });
 
