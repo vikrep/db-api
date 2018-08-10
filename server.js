@@ -53,9 +53,9 @@ app.get('/api/albums', (req, res) => {
                         res.status(200).send(table.rows)
                     }
                 })
+            pool.end()
         }
     })
-    pool.end()
 });
 
 
