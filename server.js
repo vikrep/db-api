@@ -7,20 +7,20 @@ const PORT = 5000;
 require('dotenv').config()
 
 // Pool for LocalHost
-let pool = new Pool({
-    port: 5432,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    max: 10
-});
+// let pool = new Pool({
+//     port: 5432,
+//     user: process.env.DB_USER,
+//     password: process.env.DB_PASS,
+//     database: process.env.DB_NAME,
+//     host: process.env.DB_HOST,
+//     max: 10
+// });
 
 //Pool for Heroku
-// let pool = new Pool({
-//     connectionString: process.env.DATABASE_URL,
-//     ssl: true
-// })
+let pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: true
+})
 
 // Setup the express app
 
@@ -64,7 +64,7 @@ app.get('/api/disk/:id', (req, res) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
-            client.query(`SELECT track, time FROM tracklist WHERE id = '${req.params.id}'`,
+            client.query(`SELECT track, time FROM tracklist WHERE id = '${req.params.id}';`,
                 (err, table) => {
                     done();
                     if (err) {
