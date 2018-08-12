@@ -7,20 +7,20 @@ const PORT = 5000;
 require('dotenv').config()
 
 // Pool for LocalHost
-// let pool = new Pool({
-//     port: 5432,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASS,
-//     database: process.env.DB_NAME,
-//     host: process.env.DB_HOST,
-//     max: 10
-// });
+let pool = new Pool({
+    port: 5432,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    max: 10
+});
 
 //Pool for Heroku
-let pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true
-})
+// let pool = new Pool({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: true
+// })
 
 // Setup the express app
 
@@ -45,7 +45,26 @@ app.get('/api/albums', (req, res) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
-            client.query('SELECT cover, artist, title, year, rating, id FROM artist, title WHERE artist.ref_id = title.ref_id;',
+            client.query("SELECT * FROM album ORDER BY artist;",
+                (err, table) => {
+                    done();
+                    if (err) {
+                        res.status(500).json({ error: err });
+                    } else {
+                        res.status(200).send(table.rows)
+                    }
+                })
+        }
+    })
+});
+
+app.get('/api/disk/:id', (req, res) => {
+    var idDisk = req.params.id;
+     pool.connect((err, client, done) => {
+        if (err) {
+            res.status(500).json({ error: err });
+        } else {
+            client.query(`SELECT track, time FROM tracklist WHERE id = '${req.params.id}'`,
                 (err, table) => {
                     done();
                     if (err) {
