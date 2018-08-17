@@ -45,7 +45,7 @@ app.get('/api/albums', (req, res) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
-            client.query("SELECT * FROM album ORDER BY artist;",
+            client.query("SELECT cover, artist, title, year, rating, id  FROM album ORDER BY artist;",
                 (err, table) => {
                     done();
                     if (err) {
@@ -64,7 +64,7 @@ app.get('/api/disk/:id', (req, res) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
-            client.query(`SELECT cover, artist, title, year, label, genre, style, country, format, rating, track, time FROM album, tracklist WHERE disk_id = '${req.params.id}' and id = '${req.params.id}';`,
+            client.query(`SELECT cover, artist, title, year, label, genre, style, country, format, rating, id, track, time FROM album, tracklist WHERE disk_id = '${req.params.id}' and id = '${req.params.id}';`,
                 (err, table) => {
                     done();
                     if (err) {
