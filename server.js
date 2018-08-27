@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { Pool } = require('pg');
+const fileUpload = require('express-fileupload');
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
@@ -39,6 +40,8 @@ app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Headers", "origin, X-Requested-With, Content_type, Accept");
     next();
 });
+app.use('/public', express.static(__dirname + '/public'));
+app.use(fileUpload());
 
 app.get('/api/albums', (req, res) => {
     pool.connect((err, client, done) => {
@@ -59,7 +62,6 @@ app.get('/api/albums', (req, res) => {
 });
 
 app.get('/api/disk/:id', (req, res) => {
-    var idDisk = req.params.id;
      pool.connect((err, client, done) => {
         if (err) {
             res.status(500).json({ error: err });
@@ -77,6 +79,19 @@ app.get('/api/disk/:id', (req, res) => {
     })
 });
 
+app.post('/upload', (req, res) => {
+    // console.log(req);
+    let imageFile = req.files.file;
+  
+    imageFile.mv(`${__dirname}/public/${imageFile.name}`, function(err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+  
+      res.status(200).json({file: `public/${imageFile.name}`});
+    });
+  
+  })
 
 app.listen(process.env.PORT || PORT, function () {
     console.log("Llistening on port" + PORT);
