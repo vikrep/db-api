@@ -3,8 +3,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const fileUpload = require('express-fileupload');
-const fs = require('fs-extra');
-const filePath = __dirname + "/public/200304-2.jpg";
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
@@ -81,6 +79,7 @@ app.get('/api/disk/:id', (req, res) => {
     })
 });
 
+// API uploading picture and store to file system
 app.post('/upload', (req, res) => {
     let imageFile = req.files.file;
 
@@ -92,12 +91,6 @@ app.post('/upload', (req, res) => {
     });
 });
 
-app.get('/upload', (req, res) => {
-    fs.readFile(filePath, (err, data) => {
-        if (err) throw err;
-        res.send(data)
-    });
-});
 
 app.listen(process.env.PORT || PORT, function () {
     console.log("Llistening on port" + PORT);
