@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { Pool } = require('pg');
 const fileUpload = require('express-fileupload');
+const fs = require('fs-extra');
+const filePath = __dirname + "/public/200304-2.jpg";
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
@@ -62,7 +64,7 @@ app.get('/api/albums', (req, res) => {
 });
 
 app.get('/api/disk/:id', (req, res) => {
-     pool.connect((err, client, done) => {
+    pool.connect((err, client, done) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
@@ -80,18 +82,22 @@ app.get('/api/disk/:id', (req, res) => {
 });
 
 app.post('/upload', (req, res) => {
-    // console.log(req);
     let imageFile = req.files.file;
-  
-    imageFile.mv(`${__dirname}/public/${imageFile.name}`, function(err) {
-      if (err) {
-        return res.status(500).send(err);
-      }
-  
-      res.status(200).json({file: `public/${imageFile.name}`});
+
+    imageFile.mv(`${__dirname}/public/${imageFile.name}`, function (err) {
+        if (err) {
+            return res.status(500).send(err);
+        }
+        res.status(200).json({ file: `public/${imageFile.name}` });
     });
-  
-  })
+});
+
+app.get('/upload', (req, res) => {
+    fs.readFile(filePath, (err, data) => {
+        if (err) throw err;
+        res.send(data)
+    });
+});
 
 app.listen(process.env.PORT || PORT, function () {
     console.log("Llistening on port" + PORT);
