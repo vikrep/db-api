@@ -95,6 +95,7 @@ app.get('/api/disk/:id', (req, res) => {
 // API uploading picture and store to file system
 
 app.post('/upload', upload.single('imageFile'), (req, res) => {
+    console.log(req.file)
     s3.putObject({
         Bucket: process.env.DANIK_S3_BUCKET,
         Key: req.file.originalname,
