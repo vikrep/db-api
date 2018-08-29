@@ -2,10 +2,29 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const { Pool } = require('pg');
-const fileUpload = require('express-fileupload');
+const AWS = require('aws-sdk');
+const multer = require('multer');
+
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
+
+const app = express();
+
+// configure the keys for accessing AWS
+AWS.config.update({
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+});
+
+// create S3 instance
+const s3 = new AWS.S3();
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    // file size limitation in bytes
+    limits: { fileSize: 52428800 },
+});
 
 // Pool for LocalHost
 // let pool = new Pool({
@@ -23,17 +42,11 @@ let pool = new Pool({
     ssl: true
 })
 
-// Setup the express app
-
-const app = express();
-
 // Parse incoming request data
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-
-
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -41,8 +54,8 @@ app.use(function (req, res, next) {
     next();
 });
 app.use('/public', express.static(__dirname + '/public'));
-app.use(fileUpload());
 
+// API downloading full table
 app.get('/api/albums', (req, res) => {
     pool.connect((err, client, done) => {
         if (err) {
@@ -60,7 +73,7 @@ app.get('/api/albums', (req, res) => {
         }
     })
 });
-
+// API downloading disk tracklist
 app.get('/api/disk/:id', (req, res) => {
     pool.connect((err, client, done) => {
         if (err) {
@@ -80,18 +93,20 @@ app.get('/api/disk/:id', (req, res) => {
 });
 
 // API uploading picture and store to file system
-app.post('/upload', (req, res) => {
-    let imageFile = req.files.file;
 
-    imageFile.mv(`${__dirname}/public/${imageFile.name}`, function (err) {
-        if (err) {
-            return res.status(500).send(err);
-        }
-        res.status(200).json({ file: `public/${imageFile.name}` });
-    });
-});
-
+app.post('/upload', upload.single('imageFile'), (req, res) => {
+    s3.putObject({
+        Bucket: process.env.DANIK_S3_BUCKET,
+        Key: req.file.originalname,
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype,
+        ACL: 'public-read', // your permisions  
+    }, (err) => {
+        if (err) return res.status(400).send(err);
+        res.send('File uploaded to S3');
+    })
+})
 
 app.listen(process.env.PORT || PORT, function () {
     console.log("Llistening on port" + PORT);
-});
+})
