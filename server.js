@@ -4,7 +4,6 @@ const morgan = require('morgan');
 const { Pool } = require('pg');
 const AWS = require('aws-sdk');
 const multer = require('multer');
-
 const PORT = 5000;
 // load all env variables from .env file into process.env object.
 require('dotenv').config()
@@ -92,7 +91,7 @@ app.get('/api/disk/:id', (req, res) => {
     })
 });
 
-// API uploading picture and store to file system
+// API uploading picture and store to S3 CDN
 
 app.post('/upload', upload.single('imageFile'), (req, res) => {
     console.log(req.file)
@@ -107,6 +106,41 @@ app.post('/upload', upload.single('imageFile'), (req, res) => {
         res.send('File uploaded to S3');
     })
 })
+
+// API uploading new data to album table
+
+app.post('/upload/form', (req, res) => {
+    var cover = req.body.cover
+    var artist = req.body.artist
+    var title = req.body.title
+    var year = req.body.year
+    var rating = req.body.rating
+    var id = req.body.id
+    var country = req.body.country
+    var label = req.body.label
+    var format = req.body.format
+    var genre = req.body.genre
+    var style = req.body.style
+    var credits = req.body.credits
+    pool.connect((err, client, done) => {
+        if (err) {
+            res.status(500).json({ error: err });
+        } else {
+            client.query(`INSERT INTO album (cover, artist, title, year, label, genre, style, country, format, rating, credits, id) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING album_id;`,
+            [cover, artist, title, year, label, genre, style, country, format, rating, credits, id],
+                (err, table) => {
+                    done();
+                    if (err) {
+                        res.status(500).json({ error: err });
+                    } else {
+                        res.status(200).send('Form inserted')
+                    }
+                })
+        }
+    })
+});
+
 
 app.listen(process.env.PORT || PORT, function () {
     console.log("Llistening on port" + PORT);
