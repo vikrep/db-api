@@ -122,13 +122,14 @@ app.post('/upload/form', (req, res) => {
     var genre = req.body.genre
     var style = req.body.style
     var credits = req.body.credits
+    var notes = req.body.notes
     pool.connect((err, client, done) => {
         if (err) {
             res.status(500).json({ error: err });
         } else {
-            client.query(`INSERT INTO album (cover, artist, title, year, label, genre, style, country, format, rating, credits, id) 
+            client.query(`INSERT INTO album (cover, artist, title, year, label, genre, style, country, format, rating, credits, id, notes) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING album_id;`,
-            [cover, artist, title, year, label, genre, style, country, format, rating, credits, id],
+            [cover, artist, title, year, label, genre, style, country, format, rating, credits, id, notes],
                 (err, table) => {
                     done();
                     if (err) {
