@@ -26,20 +26,20 @@ const upload = multer({
 });
 
 // Pool for LocalHost
-// let pool = new Pool({
-//     port: 5432,
-//     user: process.env.DB_USER,
-//     password: process.env.DB_PASS,
-//     database: process.env.DB_NAME,
-//     host: process.env.DB_HOST,
-//     max: 10
-// });
+let pool = new Pool({
+    port: 5432,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    host: process.env.DB_HOST,
+    max: 10
+});
 
 //Pool for Heroku
-let pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: true
-})
+// let pool = new Pool({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: true
+// })
 
 // Parse incoming request data
 
